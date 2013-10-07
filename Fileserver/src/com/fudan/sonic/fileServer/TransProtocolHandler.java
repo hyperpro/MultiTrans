@@ -1,4 +1,9 @@
 package com.fudan.sonic.fileServer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,35 +30,23 @@ public class TransProtocolHandler extends IoHandlerAdapter {
         // Close connection when unexpected exception is caught.
         session.close(true);
     }
-    
+  
     @Override  
-    protected void processStreamIo(IoSession session, InputStream in,  
-            OutputStream out) {  
-            //客户端发送文件  
-            File sendFile = new File("F:\\ttt.pdf");  
-            FileInputStream fis = null;  
-            try {  
-                fis = new FileInputStream(sendFile);  
-                  
-            } catch (FileNotFoundException e) {  
-                e.printStackTrace();  
-            }  
-            //放入线程让其执行  
-            //客户端一般都用一个线程实现即可 不用线程池  
-            new IoStreamThreadWork(fis,out).start();  
-            return;  
-    }  
-
+    public void sessionOpened(IoSession session) throws Exception {  
+        System.out.println("incomming 客户端: ");  
+        session.write("i am coming");  
+    } 
+  
     @Override
     public void messageReceived(IoSession session, Object message) {
         Logger log = LoggerFactory.getLogger(TransProtocolHandler.class);
         log.info("received: message");
         String theMessage = (String) message;
+        System.out.println(theMessage); //******************************************
         String[] result = theMessage.split(" ", 2);
         String theCommand = result[0];
 
         try {
-
             ChatCommand command = ChatCommand.valueOf(theCommand);
             String user = (String) session.getAttribute("user");
             String url;
@@ -101,6 +94,7 @@ public class TransProtocolHandler extends IoHandlerAdapter {
             	if (result.length == 2) {
             		url = result[1];
             		session.write("GETURL");
+            		//System.out.println("GETURL");
             	} else {
             		session.write("NO URL REQUIRE");
             		return;
@@ -112,17 +106,20 @@ public class TransProtocolHandler extends IoHandlerAdapter {
             		String[] TempBlock = result[1].split("-", 2);
             		BlockNumber1 = Integer.parseInt(TempBlock[0]);
             		BlockNumber2 = Integer.parseInt(TempBlock[2]);
-            		
+            		session.write("HELLO WORLD!!");
+            		//transfer the data 
             	} else {
             		session.write("REQUEST FAILED");
             	}
             	break;
             	
             case ChatCommand.ENDFILE:
+            	session.write("SAFE!");
             	break;
             
             default:
                 logger.info("Unhandled command: " + command);
+                session.write("Failed!");
                 break;
             }
 
@@ -143,6 +140,8 @@ public class TransProtocolHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
+    	System.out.println("ssssssssssss");//*********************************
+    	session.write("byebye");//*****************************
         String user = (String) session.getAttribute("user");
         users.remove(user);
         sessions.remove(session);

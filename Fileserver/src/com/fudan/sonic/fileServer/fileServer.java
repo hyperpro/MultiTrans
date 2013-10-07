@@ -1,13 +1,13 @@
 package com.fudan.sonic.fileServer;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.logging.MdcInjectionFilter;
-import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-
 
 public class fileServer {
 
@@ -15,15 +15,19 @@ public class fileServer {
 	
 	public static void main(String[] args) throws Exception{
 		NioSocketAcceptor acceptor = new NioSocketAcceptor();
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		DefaultIoFilterChainBuilder chain = acceptor.getFilterChain();
-		MdcInjectionFilter mdcInjectionFilter = new MdcInjectionFilter();
-		chain.addLast("mdc", mdcInjectionFilter);	 	 
-		chain.addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory()));
-		addLogger(chain);	 
-		// Bind
+		chain.addLast( "codec", new ProtocolCodecFilter(
+                new MathProtocolCodecFactory(true)));
+		addLogger(chain);
 		acceptor.setHandler(new TransProtocolHandler());
-		acceptor.bind(new InetSocketAddress(PORT));
-		System.out.println("Listening on port " + PORT);
+		try{
+			acceptor.bind(new InetSocketAddress(PORT));
+			System.out.println("Listening on port " + PORT);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	private static void addLogger(DefaultIoFilterChainBuilder chain)
