@@ -36,19 +36,21 @@ public class TransProtocolHandler extends IoHandlerAdapter {
         BaseMessage baseMessage = new BaseMessage();
         baseMessage.setDataType(DataType.UPLOAD_FILE);
         NewFile ourFile = new NewFile();
-        File file = new File("\\home\\zhangxu\\下载\\text.mp3");
+        File file = new File("//home//zhangxu//下载//test.mp3");
         ourFile.setFileName(file.getName());
         ourFile.setFileSize((int) file.length());
         //set file offset need to be done****************************************
         ourFile.setOffset1(1);
         ourFile.setOffset2(1);
+        //************************************************************
         try {
         	FileHelper helper = new FileHelper();
         	ourFile.setFileContent(helper.getContent(file));
         } catch (Exception e) {
         	e.printStackTrace();
         }
-        //session.write("i am coming");  
+        baseMessage.setData(ourFile);
+        session.write(baseMessage);  
     } 
   
     @Override

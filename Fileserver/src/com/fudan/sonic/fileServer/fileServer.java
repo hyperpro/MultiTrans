@@ -19,7 +19,7 @@ public class fileServer {
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		DefaultIoFilterChainBuilder chain = acceptor.getFilterChain();
 		chain.addLast( "codec", new ProtocolCodecFilter(
-                new MathProtocolCodecFactory(true)));
+                new MathProtocolCodecFactory()));
 		addLogger(chain);
 		acceptor.setHandler(new TransProtocolHandler());
 		try{
