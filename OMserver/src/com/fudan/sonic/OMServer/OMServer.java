@@ -8,6 +8,8 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
+import com.fudan.sonic.fileCode.MathProtocolCodecFactory;
+
 public class OMServer {
 	
 	public static final int PORT = 1235; 
