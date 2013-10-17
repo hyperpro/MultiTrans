@@ -19,7 +19,6 @@ public class BaseMessageEncoder implements MessageEncoder<BaseMessage>{
 	@Override
 	public void encode(IoSession session, BaseMessage message,
 			ProtocolEncoderOutput outPut) throws Exception {
-		// TODO Auto-generated method stub
 		IoBuffer buffer = IoBuffer.allocate(8);
 		buffer.setAutoExpand(true);
 		buffer.putInt(message.getDataType());

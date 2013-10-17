@@ -6,6 +6,7 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.apache.mina.filter.codec.demux.MessageDecoder;
 import org.apache.mina.filter.codec.demux.MessageDecoderResult;
+import com.fudan.sonic.DataType.Context;
 
 import com.fudan.sonic.DataType.DataType;
 
@@ -74,12 +75,22 @@ public class BaseMessageDecoder implements MessageDecoder {
 			context.speed = Integer.parseInt(messageArray[4]);
 			break;
 		case DataType.ENSURE_HELP:
+			context.offset1 = Integer.parseInt(messageArray[3]);
+			context.offset2 = Integer.parseInt(messageArray[4]);
 			break;
 		case DataType.CORD_HELP:
+			context.domUserName = messageArray[3];
+			context.offset1 = Integer.parseInt(messageArray[3]);
+			context.offset2 = Integer.parseInt(messageArray[4]);
 			break;
 		case DataType.CORD_END:
+			if (messageArray[3].equals("yes")) 
+				context.answerFlag = true;
+			else
+				context.answerFlag = false;
 			break;
 		default:
+			System.out.println();
 			break;
 		}
 		return MessageDecoderResult.OK;
@@ -93,38 +104,5 @@ public class BaseMessageDecoder implements MessageDecoder {
 		
 	}
 	
-	private class Context {
-		public int dataType;
-		public String sender;
-		public String source;
-		public String destin;
-		public String domUserName;
-		public String desUserName;
-		public String password;
-		public String URL;
-		public String extendMessage;
-		public byte[] byteMessage;
-		public int messageSize;
-		public int speed;
-		public int offset1;
-		public int offset2;
-		public boolean answerFlag = false;
-		public boolean init = false;
-		
-		public void reset(){
-			dataType = 0;
-			sender = null;
-			source = null;
-			destin = null;
-			domUserName = null;
-			desUserName = null;
-			password = null;
-			URL = null;
-			extendMessage = null;
-			speed = 0;
-			offset1 = 0;
-			offset2 = 0;
-		}
-		
-	}
+	
 }
